@@ -1,5 +1,5 @@
-import { GameBoard } from "./game-board";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <GameBoard />;
+  redirect("/idle");
 }

@@ -1,0 +1,66 @@
+.idle-shell { --pixel-unit:32px; position:fixed; inset:0; overflow:hidden; background:#18352d; color:#f5f0dc; font-family:var(--font-sans),sans-serif; }
+.idle-canvas { position:absolute; inset:0; display:block; touch-action:none; }
+.idle-canvas,.idle-avatar { image-rendering:pixelated; }
+.idle-topbar { position:absolute; top:12px; left:12px; right:12px; min-height:58px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:9px 14px; border:1px solid #6f765f; border-radius:6px; background:#101813e8; box-shadow:0 8px 24px #0007; }
+.idle-topbar>div:first-child { display:flex; flex-direction:column; } .idle-topbar strong { color:#e4cf8b; font-family:var(--font-display),serif; font-size:18px; } .idle-topbar span { color:#aebaa9; font-size:11px; }
+.idle-resources { display:flex; gap:14px; } .idle-resources span { display:flex; flex-direction:column; text-transform:uppercase; font-size:9px; } .idle-resources b { color:#fff5c9; font-size:13px; }
+.idle-region-tabs { position:absolute; left:12px; top:82px; display:flex; padding:3px; border:1px solid #59645a; border-radius:6px; background:#101813e8; box-shadow:0 8px 20px #0006; }
+.idle-region-tabs button { min-height:32px; padding:6px 11px; border:0; border-radius:4px; background:transparent; color:#aeb8ad; font-weight:750; cursor:pointer; }
+.idle-region-tabs button.active { background:#394a3e; color:#fff1bf; box-shadow:inset 0 0 0 1px #77836d; }
+.idle-actions { position:absolute; right:12px; top:82px; display:flex; gap:8px; } .idle-actions button,.idle-build button { min-height:40px; padding:8px 14px; border:1px solid #75806b; border-radius:6px; background:#1b2a22e8; color:#f4edd2; font-weight:750; cursor:pointer; } .idle-actions button.active { background:#315f42; border-color:#8aad77; }
+.idle-roster { position:absolute; left:12px; top:132px; display:flex; flex-direction:column; gap:6px; width:116px; }
+.idle-roster button { height:68px; display:flex; align-items:center; gap:7px; padding:5px; overflow:hidden; border:1px solid #59645a; border-radius:6px; background:#101813e8; color:#dce3d9; text-align:left; cursor:pointer; box-shadow:0 7px 18px #0005; }
+.idle-roster button.active { border-color:#d2ba62; box-shadow:inset 0 0 0 1px #8b742d,0 7px 18px #0006; }
+.idle-roster button>span:last-child { min-width:0; display:flex; flex-direction:column; } .idle-roster b { overflow:hidden; font-size:11px; text-overflow:ellipsis; } .idle-roster small { color:#82c6a3; font-size:9px; }
+.idle-avatar { flex:0 0 52px; width:52px; height:56px; object-fit:contain; }
+.idle-stats { position:absolute; top:136px; right:12px; width:286px; max-height:calc(100vh - 250px); overflow:auto; border:1px solid #667066; border-radius:6px; background:#0d1613ee; box-shadow:0 14px 34px #0009; }
+.idle-stats>header { position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between; padding:10px 11px; border-bottom:1px solid #3c4a42; background:#111d18f5; }
+.idle-stats>header div { display:flex; flex-direction:column; } .idle-stats>header small { color:#769184; font-size:8px; } .idle-stats>header strong { color:#f0db98; font-size:14px; }
+.idle-stats>header button { width:28px; height:28px; border:1px solid #4f5d55; border-radius:5px; background:#17231d; color:#d6ded8; font-size:18px; cursor:pointer; }
+.idle-levels { display:grid; gap:10px; padding:11px; border-bottom:1px solid #35423b; }
+.idle-levels>div { display:grid; gap:4px; } .idle-levels span,.idle-skill>div>span { display:flex; justify-content:space-between; gap:8px; color:#c8d2cc; font-size:10px; } .idle-levels b,.idle-skill b { color:#78dfae; font-size:11px; }
+.idle-levels i,.idle-skill i { width:100%; height:6px; overflow:hidden; border-radius:3px; background:#07100d; } .idle-levels em,.idle-skill em { display:block; height:100%; border-radius:inherit; background:#3e91df; }
+.idle-levels small,.idle-skill small { color:#74827b; font-size:8px; }
+.idle-skill-list { display:grid; padding:3px 11px 9px; }
+.idle-skill { min-height:58px; display:grid; grid-template-columns:28px 1fr; align-items:center; gap:8px; border-bottom:1px solid #28352f; } .idle-skill:last-child { border-bottom:0; }
+.idle-skill.primary .idle-skill-glyph { border-color:#d4bd64; color:#fff0ad; } .idle-skill.primary em { background:#26ca88; }
+.idle-skill-glyph { width:27px; height:27px; display:grid; place-items:center; border:1px solid #536159; border-radius:5px; color:#aebdb5; font:bold 12px monospace; }
+.idle-skill>div { min-width:0; display:grid; gap:4px; }
+.idle-hunt-panel { position:absolute; top:136px; right:12px; width:268px; max-height:calc(100vh - 250px); overflow:hidden; border:1px solid #667066; border-radius:6px; background:#0d1613ee; box-shadow:0 14px 34px #0009; }
+.idle-hunt-panel>nav { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid #3c4a42; }
+.idle-hunt-panel>nav button { height:36px; border:0; border-right:1px solid #3c4a42; background:#111d18; color:#93a097; font-weight:800; cursor:pointer; }
+.idle-hunt-panel>nav button:last-child { border-right:0; }
+.idle-hunt-panel>nav button.active { background:#263b30; color:#f0db98; box-shadow:inset 0 -2px #d2ba62; }
+.idle-analyzer header,.idle-battle-list header,.idle-loot-list header { display:flex; align-items:center; justify-content:space-between; min-height:30px; padding:7px 9px; color:#7f9689; font-size:9px; font-weight:850; letter-spacing:0; }
+.idle-analyzer>div { display:grid; grid-template-columns:1fr 1fr; gap:1px; padding:0 8px 8px; }
+.idle-analyzer span { display:flex; flex-direction:column; min-height:38px; padding:5px 7px; background:#111d18; color:#77867e; font-size:8px; }
+.idle-analyzer b { color:#d7ded9; font-size:10px; }
+.idle-analyzer b.running { color:#72dda9; }.idle-analyzer b.paused { color:#e2bd69; }
+.idle-battle-list { max-height:calc(100vh - 402px); overflow:auto; border-top:1px solid #35423b; }
+.idle-battle-list header small { color:#718179; font-size:8px; }
+.idle-battle-list>button { width:100%; min-height:48px; display:grid; grid-template-columns:var(--pixel-unit) 1fr; align-items:center; gap:8px; padding:6px 9px; border:0; border-top:1px solid #28352f; background:transparent; color:#dce3d9; text-align:left; cursor:pointer; }
+.idle-battle-list>button.selected { background:#343721; box-shadow:inset 3px 0 #d2ba62; }
+.idle-monster-glyph { width:var(--pixel-unit); height:var(--pixel-unit); display:grid; place-items:center; border:1px solid #56635b; background:#19241f; color:#cfd8d2; font:bold 13px monospace; image-rendering:pixelated; }
+.idle-monster-glyph.rare { border-color:#d6dde1; color:#fff; }.idle-monster-glyph.legendary { border-color:#c33d50; color:#ff6274; }
+.idle-battle-list>button>span:last-child { min-width:0; display:grid; gap:3px; }
+.idle-battle-list b { overflow:hidden; font-size:10px; white-space:nowrap; text-overflow:ellipsis; }
+.idle-battle-list i { width:100%; height:4px; overflow:hidden; background:#241115; }
+.idle-battle-list em { display:block; height:100%; background:#c83245; }
+.idle-battle-list small { color:#73817a; font-size:8px; }
+.idle-loot-list { max-height:calc(100vh - 286px); overflow:auto; padding-bottom:8px; }
+.idle-loot-list p { margin:0; padding:8px 10px; border-top:1px solid #28352f; color:#e1c768; font-size:10px; }
+.idle-loot-list>span { display:block; padding:14px 10px; color:#718078; font-size:10px; }
+.idle-build { position:absolute; top:136px; right:12px; width:250px; padding:12px; border:1px solid #77745e; border-radius:6px; background:#111a16f2; box-shadow:0 14px 34px #0009; } .idle-build>div { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; color:#e4cf8b; } .idle-build>div button { min-height:28px; padding:0 9px; font-size:20px; } .idle-build>button { width:100%; display:flex; justify-content:space-between; margin-top:7px; } .idle-build button span,.idle-build small { color:#9faa9b; font-size:10px; } .idle-build small { display:block; margin-top:10px; } .idle-build button:disabled { opacity:.5; }
+.idle-combat-log { position:absolute; left:12px; bottom:12px; width:330px; height:128px; overflow:hidden; padding:7px 9px; border:1px solid #566158; border-radius:6px; background:#0b1210e8; box-shadow:0 8px 24px #0008; pointer-events:none; }
+.idle-combat-log header { display:flex; justify-content:space-between; gap:8px; padding-bottom:5px; border-bottom:1px solid #334039; color:#74867c; font-size:8px; font-weight:850; }
+.idle-combat-log header b { max-width:170px; overflow:hidden; color:#d8c37c; white-space:nowrap; text-overflow:ellipsis; }
+.idle-combat-log p { margin:4px 0 0; overflow:hidden; color:#b7c1bb; font:9px monospace; white-space:nowrap; text-overflow:ellipsis; }
+.idle-combat-log p.system { color:#d8c37c; }.idle-combat-log p.loot { color:#e1c768; }
+.idle-zone { position:absolute; bottom:91px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; min-width:230px; padding:7px 14px; border:1px solid #626b5c; border-radius:6px; background:#101813df; } .idle-zone b { color:#e8d79d; font-size:12px; } .idle-zone span { color:#a8b4a6; font-size:10px; }
+.idle-hotbar { position:absolute; left:50%; bottom:12px; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,64px); gap:5px; padding:6px; border:1px solid #626b5c; border-radius:6px; background:#0c1310ed; box-shadow:0 8px 24px #0008; }
+.idle-hotbar button { position:relative; width:64px; height:62px; display:grid; grid-template-rows:30px 14px; place-items:center; padding:6px 3px 3px; overflow:hidden; border:1px solid #4d5a51; border-radius:5px; background:#17211c; color:#d9dfd4; cursor:pointer; }
+.idle-hotbar button.ready { border-color:#d3bc68; box-shadow:inset 0 0 0 1px #7a682d; } .idle-hotbar button.ultimate { border-color:#7d5261; background:#21171c; }
+.idle-hotbar button>b { color:#e7d894; font-size:23px; line-height:1; } .idle-hotbar button>span { max-width:100%; overflow:hidden; color:#c7d0c5; font-size:9px; white-space:nowrap; text-overflow:ellipsis; }
+.idle-hotbar kbd { position:absolute; top:3px; left:5px; color:#849289; font:8px monospace; } .idle-hotbar small { position:absolute; top:3px; right:5px; color:#5fa6d8; font-size:8px; }
+@media(max-width:900px) { .idle-resources { gap:9px; } .idle-resources span:nth-child(3),.idle-resources span:nth-child(4) { display:none; } .idle-combat-log { width:270px; } }
+@media(max-width:680px) { .idle-topbar { left:8px; right:8px; top:8px; padding:8px 10px; } .idle-topbar strong { font-size:14px; } .idle-resources { gap:9px; } .idle-region-tabs { left:8px; top:76px; } .idle-region-tabs button { padding:5px 8px; font-size:11px; } .idle-actions { top:76px; right:8px; gap:4px; } .idle-actions button { min-height:34px; padding:6px 7px; font-size:10px; } .idle-roster { left:8px; top:118px; width:auto; flex-direction:row; } .idle-roster button { width:94px; height:50px; } .idle-avatar { flex-basis:36px; width:36px; height:40px; } .idle-stats,.idle-hunt-panel { top:176px; right:8px; width:min(286px,calc(100vw - 16px)); max-height:calc(100vh - 350px); } .idle-battle-list { max-height:calc(100vh - 540px); } .idle-build { top:122px; right:8px; width:min(250px,calc(100vw - 16px)); } .idle-combat-log { display:none; } .idle-zone { bottom:82px; min-width:210px; } .idle-hotbar { bottom:7px; grid-template-columns:repeat(5,54px); gap:3px; padding:4px; } .idle-hotbar button { width:54px; height:58px; } }

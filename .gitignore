@@ -43,3 +43,5 @@ next-env.d.ts
 /.pnpm-store/
 /dev-server.log
 /dev-server.err.log
+/idle-*.log
+/supabase/.temp/

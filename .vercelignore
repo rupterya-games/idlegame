@@ -1,0 +1,7 @@
+.git
+.next
+.pnpm-store
+.vercel
+node_modules
+*.log
+.env*
