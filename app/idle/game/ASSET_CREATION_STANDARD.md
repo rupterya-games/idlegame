@@ -87,25 +87,21 @@ separadamente no canvas para nao deformar o recorte do corpo.
 
 ## 4. Escala visual por categoria
 
-O padrao de producao novo usa uma grade logica de `32 px`: icones e criaturas
+O padrao de producao usa uma grade logica de `32 px`: icones e criaturas
 pequenas em `32 x 32`, humanoides em `64 x 64` e chefes em multiplos de 32. A
 exibicao pode ampliar a arte somente em escala inteira e com nearest-neighbor.
-Os tamanhos abaixo descrevem os assets legados atualmente integrados; nao sao um
-convite para gerar novas folhas em resolucoes irregulares.
 
 O PNG fonte pode ter qualquer resolucao, mas o tamanho final no canvas deve
 seguir uma categoria consistente:
 
 | Categoria | Tamanho aproximado no canvas |
 | --- | ---: |
-| Cowboy e vampiro | 96 px |
-| Morcego comum | 84 px |
-| Golden Morcego | 112 px |
-| Oni comum | 102 px |
-| Oni lutador | 108 px |
-| Oni brutamontes | 126 px |
-| Oni Behemut | 150 px |
-| Oni Behemut Gold | 158 px |
+| Cowboy, arqueiro e vampiros | 64 px |
+| Morcego comum | 32 px |
+| Golden Morcego | 64 px |
+| Oni comum e Oni lutador | 64 px |
+| Oni brutamontes | 96 px |
+| Oni Behemut e Behemut Gold | 128 px |
 
 Ao mudar o tamanho visual, revise tambem:
 
@@ -173,7 +169,7 @@ renderizador.
 ### Disparo de Prata
 
 - Dano base: 14.
-- Usa `cowboy-attack-4dir-v5.png`.
+- Usa `cowboy-attack-4dir-v7.png`, derivado do mesmo corpo da caminhada `v6`.
 - O projetil e desenhado pelo motor, nao dentro de todos os quadros da folha.
 
 ### Tambor Marcado
@@ -185,7 +181,7 @@ renderizador.
 
 ### Duplo Tambor
 
-- Usa `cowboy-dual-barrage-4dir-v1.png`.
+- Reutiliza a folha de ataque canonica do cowboy; os 12 projeteis ficam no canvas.
 - Custa 35 de mana.
 - Dispara 12 balas alternando as duas pistolas.
 - Cada bala causa 70% do dano base, arredondado para 10.
@@ -218,6 +214,11 @@ Regras:
 Fiordevalle usa pedra gelada, neve, rosas, cemiterio e arquitetura gotica.
 Ryukuzam usa pedra musgosa, terra escura, bambu, folhas de bordo, arrozais,
 madeira, caminhos de torii e sangue de campo de batalha.
+
+O mapa publicado tambem pode usar um backplate continuo `4:3` normalizado para
+`1200 x 900`, desenhado no mundo em `2400 x 1800`. O atlas continua sendo a
+fonte para expansoes e transicoes. Backplates nao podem conter personagens, UI
+ou props com colisao; esses elementos permanecem em camadas separadas.
 
 ## 9. Atlas de arquitetura
 
@@ -260,12 +261,9 @@ oniCommonWalk: "/idle/assets/oni-common-walk-4dir-v1.png",
 oniCommonAttack: "/idle/assets/oni-common-attack-4dir-v1.png",
 ```
 
-O preparador de folhas realiza:
-
-1. remocao do fundo claro conectado as bordas;
-2. limpeza de halo claro residual;
-3. recorte independente dos 16 quadros por limites exatos;
-4. criacao de 16 canvases transparentes de tamanho fixo.
+O preparador de folhas recorta independentemente os 16 quadros por limites
+exatos e cria canvases transparentes de tamanho fixo. Alpha, halo e chroma key
+sao resolvidos antes pelo normalizador de assets.
 
 O preparador nunca recentraliza corpo, cabeca, pes, arma ou efeito. Centro e
 linha de base pertencem a arte fonte. Consulte `SPRITE_STANDARD.md` antes de

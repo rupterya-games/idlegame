@@ -10,13 +10,12 @@ export const MONSTER_ABILITY_RANGE = 164;
 export type MonsterAction = "melee-hit" | "ability-hit" | null;
 
 export function monsterSeparation(monster: Monster) {
-  if (monster.species === "golden-bat") return 78;
-  if (monster.species === "bat") return 46;
-  if (monster.species === "oni-behemut-gold") return 116;
-  if (monster.species === "oni-behemut") return 108;
-  if (monster.species === "oni-brute") return 86;
-  if (monster.species === "oni-fighter" || monster.species === "oni-common") return 68;
-  return ACTOR_SEPARATION;
+  if (monster.species === "bat") return 28;
+  if (monster.species === "golden-bat") return 48;
+  if (monster.species === "oni-behemut-gold" || monster.species === "oni-behemut") return 96;
+  if (monster.species === "oni-brute") return 72;
+  if (monster.species === "oni-fighter" || monster.species === "oni-common") return 54;
+  return 50;
 }
 
 const monsterMeleeRange = (monster: Monster) => Math.max(MELEE_ATTACK_RANGE, monsterSeparation(monster) + 12);

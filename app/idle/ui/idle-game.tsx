@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ACTOR_SEPARATION, directionFromVector, MONSTER_ABILITY_DURATION, MONSTER_ATTACK_DURATION, monsterSeparation, normalized, PLAYER_SPEED, separateMonsters, stepMonster } from "../game/engine";
+import { ACTOR_SEPARATION, directionFromVector, MONSTER_ABILITY_DURATION, monsterSeparation, normalized, PLAYER_SPEED, separateMonsters, stepMonster } from "../game/engine";
 import { createBat, createMonster, createOni, findBatIslandSpawn, findMonsterSpawn, respawnMonster } from "../game/monsters";
 import { applyDefense, characterNames, getDerivedStats, grantProgress, skillNames, xpToNext } from "../game/progression";
 import { createEmptySave, loadSave, storeSave } from "../game/save";
@@ -33,12 +33,6 @@ const rosePatches = Array.from({ length: 34 }, (_, index) => ({
   tile: index % 4 === 0 ? 1 : 0,
   size: index % 4 === 0 ? 58 : 38,
 }));
-const bloodStains: Point[] = [
-  { x: 116, y: 812 }, { x: 218, y: 946 }, { x: 142, y: 1038 },
-  { x: 1510, y: 1260 }, { x: 1640, y: 1370 }, { x: 1810, y: 760 },
-  { x: 1930, y: 880 }, { x: 730, y: 420 }, { x: 1280, y: 1060 },
-];
-
 type Images = Record<"cowboyIdle" | "cowboyWalk" | "cowboyAttack" | "cowboyDual" | "archerIdle" | "archerWalk" | "archerAttack" | "vampireWalk" | "vampireAttack" | "vampireRareWalk" | "vampireRareAttack" | "vampireLegendaryWalk" | "vampireLegendaryAttack" | "batWalk" | "batAttack" | "goldenBatWalk" | "goldenBatAttack" | "oniCommonWalk" | "oniCommonAttack" | "oniFighterWalk" | "oniFighterAttack" | "oniBruteWalk" | "oniBruteAttack" | "oniBehemutWalk" | "oniBehemutAttack" | "oniBehemutGoldWalk" | "oniBehemutGoldAttack" | "terrain" | "architecture" | "props" | "ryukuzamTerrain" | "ryukuzamArchitecture", HTMLImageElement>;
 type DirectionalSpriteName = Exclude<keyof Images, "terrain" | "architecture" | "props" | "ryukuzamTerrain" | "ryukuzamArchitecture">;
 const directionalSpriteNames: DirectionalSpriteName[] = ["cowboyIdle", "cowboyWalk", "cowboyAttack", "cowboyDual", "archerIdle", "archerWalk", "archerAttack", "vampireWalk", "vampireAttack", "vampireRareWalk", "vampireRareAttack", "vampireLegendaryWalk", "vampireLegendaryAttack", "batWalk", "batAttack", "goldenBatWalk", "goldenBatAttack", "oniCommonWalk", "oniCommonAttack", "oniFighterWalk", "oniFighterAttack", "oniBruteWalk", "oniBruteAttack", "oniBehemutWalk", "oniBehemutAttack", "oniBehemutGoldWalk", "oniBehemutGoldAttack"];
@@ -55,7 +49,7 @@ type ActivityEvent = { id: number; text: string; tone: "combat" | "loot" | "syst
 const COWBOY_BASIC_ATTACK_DURATION = .32;
 const COWBOY_DUAL_ATTACK_DURATION = .2;
 const COWBOY_ATTACK_IMPACT_PROGRESS = .5;
-const SPRITE_ASSET_VERSION = "20260827-5";
+const SPRITE_ASSET_VERSION = "20260827-6";
 
 const monsterNames: Record<Monster["species"], string> = {
   vampire: "Vampiro",
@@ -75,33 +69,33 @@ function monsterName(monster: Monster) {
 
 function loadImages() {
   const sources: Record<keyof Images, string> = {
-    cowboyIdle: "/idle/assets/cowboy-idle-4dir-v1.png",
-    cowboyWalk: "/idle/assets/cowboy-walk-4dir-v5.png",
-    cowboyAttack: "/idle/assets/cowboy-attack-4dir-v6.png",
-    cowboyDual: "/idle/assets/cowboy-dual-barrage-4dir-v1.png",
-    archerIdle: "/idle/assets/archer-idle-4dir-v1.png",
-    archerWalk: "/idle/assets/archer-walk-4dir-v1.png",
-    archerAttack: "/idle/assets/archer-attack-4dir-v1.png",
-    vampireWalk: "/idle/assets/vampire-walk-4dir-v4.png",
-    vampireAttack: "/idle/assets/vampire-attack-4dir-v4.png",
-    vampireRareWalk: "/idle/assets/vampire-rare-walk-4dir-v1.png",
-    vampireRareAttack: "/idle/assets/vampire-rare-attack-4dir-v1.png",
-    vampireLegendaryWalk: "/idle/assets/vampire-legendary-walk-4dir-v1.png",
-    vampireLegendaryAttack: "/idle/assets/vampire-legendary-attack-4dir-v1.png",
-    batWalk: "/idle/assets/bat-walk-4dir-v1.png",
-    batAttack: "/idle/assets/bat-attack-4dir-v1.png",
-    goldenBatWalk: "/idle/assets/golden-bat-walk-4dir-v1.png",
-    goldenBatAttack: "/idle/assets/golden-bat-attack-4dir-v1.png",
-    oniCommonWalk: "/idle/assets/oni-common-walk-4dir-v1.png", oniCommonAttack: "/idle/assets/oni-common-attack-4dir-v1.png",
-    oniFighterWalk: "/idle/assets/oni-fighter-walk-4dir-v1.png", oniFighterAttack: "/idle/assets/oni-fighter-attack-4dir-v1.png",
-    oniBruteWalk: "/idle/assets/oni-brute-walk-4dir-v1.png", oniBruteAttack: "/idle/assets/oni-brute-attack-4dir-v1.png",
-    oniBehemutWalk: "/idle/assets/oni-behemut-walk-4dir-v1.png", oniBehemutAttack: "/idle/assets/oni-behemut-attack-4dir-v1.png",
-    oniBehemutGoldWalk: "/idle/assets/oni-behemut-gold-walk-4dir-v1.png", oniBehemutGoldAttack: "/idle/assets/oni-behemut-gold-attack-4dir-v1.png",
-    terrain: "/idle/assets/reference-terrain.png",
-    architecture: "/idle/assets/fiordevalle-architecture-v1.png",
-    props: "/idle/assets/fiordevalle-props-v1.png",
-    ryukuzamTerrain: "/idle/assets/ryukuzam-terrain-v1.png",
-    ryukuzamArchitecture: "/idle/assets/ryukuzam-architecture-v1.png",
+    cowboyIdle: "/idle/assets/cowboy-walk-4dir-v6.png",
+    cowboyWalk: "/idle/assets/cowboy-walk-4dir-v6.png",
+    cowboyAttack: "/idle/assets/cowboy-attack-4dir-v7.png",
+    cowboyDual: "/idle/assets/cowboy-attack-4dir-v7.png",
+    archerIdle: "/idle/assets/archer-walk-4dir-v2.png",
+    archerWalk: "/idle/assets/archer-walk-4dir-v2.png",
+    archerAttack: "/idle/assets/archer-walk-4dir-v2.png",
+    vampireWalk: "/idle/assets/vampire-walk-4dir-v6.png",
+    vampireAttack: "/idle/assets/vampire-walk-4dir-v6.png",
+    vampireRareWalk: "/idle/assets/vampire-rare-walk-4dir-v2.png",
+    vampireRareAttack: "/idle/assets/vampire-rare-walk-4dir-v2.png",
+    vampireLegendaryWalk: "/idle/assets/vampire-legendary-walk-4dir-v2.png",
+    vampireLegendaryAttack: "/idle/assets/vampire-legendary-walk-4dir-v2.png",
+    batWalk: "/idle/assets/bat-walk-4dir-v2.png",
+    batAttack: "/idle/assets/bat-walk-4dir-v2.png",
+    goldenBatWalk: "/idle/assets/golden-bat-walk-4dir-v2.png",
+    goldenBatAttack: "/idle/assets/golden-bat-walk-4dir-v2.png",
+    oniCommonWalk: "/idle/assets/oni-common-walk-4dir-v2.png", oniCommonAttack: "/idle/assets/oni-common-walk-4dir-v2.png",
+    oniFighterWalk: "/idle/assets/oni-fighter-walk-4dir-v2.png", oniFighterAttack: "/idle/assets/oni-fighter-walk-4dir-v2.png",
+    oniBruteWalk: "/idle/assets/oni-brute-walk-4dir-v2.png", oniBruteAttack: "/idle/assets/oni-brute-walk-4dir-v2.png",
+    oniBehemutWalk: "/idle/assets/oni-behemut-walk-4dir-v2.png", oniBehemutAttack: "/idle/assets/oni-behemut-walk-4dir-v2.png",
+    oniBehemutGoldWalk: "/idle/assets/oni-behemut-gold-walk-4dir-v2.png", oniBehemutGoldAttack: "/idle/assets/oni-behemut-gold-walk-4dir-v2.png",
+    terrain: "/idle/assets/fiordevalle-world-v1.png",
+    architecture: "/idle/assets/fiordevalle-architecture-v2.png",
+    props: "/idle/assets/fiordevalle-architecture-v2.png",
+    ryukuzamTerrain: "/idle/assets/ryukuzam-world-v1.png",
+    ryukuzamArchitecture: "/idle/assets/ryukuzam-architecture-v2.png",
   };
   return Object.fromEntries(Object.entries(sources).map(([name, source]) => {
     const image = new Image();
@@ -116,29 +110,13 @@ function CharacterAvatar({ character }: { character: CharacterClass }) {
     const canvas = avatarRef.current;
     if (!canvas) return;
     const image = new Image();
-    image.src = `${character === "cowboy" ? "/idle/assets/cowboy-idle-4dir-v1.png" : "/idle/assets/archer-idle-4dir-v1.png"}?v=${SPRITE_ASSET_VERSION}`;
+    image.src = `${character === "cowboy" ? "/idle/assets/cowboy-walk-4dir-v6.png" : "/idle/assets/archer-walk-4dir-v2.png"}?v=${SPRITE_ASSET_VERSION}`;
     image.onload = () => {
       const cellWidth = Math.round(image.naturalWidth / 4), cellHeight = Math.round(image.naturalHeight / 4);
-      const frame = document.createElement("canvas"); frame.width = cellWidth; frame.height = cellHeight;
-      const frameContext = frame.getContext("2d", { willReadFrequently: true })!; frameContext.drawImage(image, 0, 0, cellWidth, cellHeight, 0, 0, cellWidth, cellHeight);
-      const pixels = frameContext.getImageData(0, 0, cellWidth, cellHeight), data = pixels.data, visited = new Uint8Array(cellWidth * cellHeight), queue: number[] = [];
-      const floor = character === "archer" ? 230 : 245;
-      const enqueue = (x: number, y: number) => {
-        const index = y * cellWidth + x, pixel = index * 4, r = data[pixel], g = data[pixel + 1], b = data[pixel + 2];
-        if (!visited[index] && (data[pixel + 3] === 0 || Math.min(r, g, b) >= floor && Math.max(r, g, b) - Math.min(r, g, b) <= 24)) { visited[index] = 1; queue.push(index); }
-      };
-      for (let x = 0; x < cellWidth; x += 1) { enqueue(x, 0); enqueue(x, cellHeight - 1); }
-      for (let y = 0; y < cellHeight; y += 1) { enqueue(0, y); enqueue(cellWidth - 1, y); }
-      for (let cursor = 0; cursor < queue.length; cursor += 1) {
-        const index = queue[cursor], x = index % cellWidth, y = Math.floor(index / cellWidth); data[index * 4 + 3] = 0;
-        if (x > 0) enqueue(x - 1, y); if (x < cellWidth - 1) enqueue(x + 1, y); if (y > 0) enqueue(x, y - 1); if (y < cellHeight - 1) enqueue(x, y + 1);
-      }
-      if (character === "archer") for (let index = 0; index < cellWidth * cellHeight; index += 1) {
-        const pixel = index * 4, r = data[pixel], g = data[pixel + 1], b = data[pixel + 2];
-        if (Math.min(r, g, b) >= 230 && Math.max(r, g, b) - Math.min(r, g, b) <= 24) data[pixel + 3] = 0;
-      }
-      frameContext.putImageData(pixels, 0, 0);
-      const context = canvas.getContext("2d")!; context.clearRect(0, 0, canvas.width, canvas.height); context.imageSmoothingEnabled = false; context.drawImage(frame, 0, 0, cellWidth, cellHeight, 0, 0, canvas.width, canvas.height);
+      const context = canvas.getContext("2d")!;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.imageSmoothingEnabled = false;
+      context.drawImage(image, 0, 0, cellWidth, cellHeight, 0, 0, canvas.width, canvas.height);
     };
   }, [character]);
   return <canvas ref={avatarRef} width="52" height="56" className="idle-avatar" aria-hidden="true" />;
@@ -170,6 +148,7 @@ export function IdleGame() {
   const [statsOpen, setStatsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [huntTab, setHuntTab] = useState<"battle" | "loot">("battle");
+  const [huntCollapsed, setHuntCollapsed] = useState(false);
   const [selectedMonsterId, setSelectedMonsterId] = useState<string | null>(null);
   const [, setMonsterRevision] = useState(0);
   const [sessionKills, setSessionKills] = useState(0);
@@ -227,6 +206,13 @@ export function IdleGame() {
   useEffect(() => { autoRef.current = autoHunt; }, [autoHunt]);
   useEffect(() => { saveRef.current = save; }, [save]);
   useEffect(() => { const timer = setInterval(() => storeSave(saveRef.current), 5000); return () => clearInterval(timer); }, []);
+  useEffect(() => {
+    const mobile = matchMedia("(max-width: 680px)");
+    const timer = setTimeout(() => setHuntCollapsed(mobile.matches), 0);
+    const update = (event: MediaQueryListEvent) => setHuntCollapsed(event.matches);
+    mobile.addEventListener("change", update);
+    return () => { clearTimeout(timer); mobile.removeEventListener("change", update); };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -301,91 +287,6 @@ export function IdleGame() {
         const sourceRight = Math.round((column + 1) * cellWidth);
         const sourceBottom = Math.round((row + 1) * cellHeight);
         frameContext.drawImage(image, sourceX, sourceY, sourceRight - sourceX, sourceBottom - sourceY, 0, 0, 384, 384);
-
-        // Remove only a legacy white backdrop connected to the frame border.
-        // Sprite parts and their original foot anchor remain untouched.
-        const pixels = frameContext.getImageData(0, 0, 384, 384);
-        const data = pixels.data;
-        const visited = new Uint8Array(384 * 384);
-        const queue: number[] = [];
-        const backgroundFloor = 230;
-        const isBackground = (index: number) => {
-          const pixel = index * 4;
-          if (data[pixel + 3] === 0) return true;
-          const r = data[pixel], g = data[pixel + 1], b = data[pixel + 2];
-          return Math.min(r, g, b) >= backgroundFloor && Math.max(r, g, b) - Math.min(r, g, b) <= 24;
-        };
-        const enqueue = (x: number, y: number) => {
-          const index = y * 384 + x;
-          if (!visited[index] && isBackground(index)) { visited[index] = 1; queue.push(index); }
-        };
-        for (let x = 0; x < 384; x += 1) { enqueue(x, 0); enqueue(x, 383); }
-        for (let y = 0; y < 384; y += 1) { enqueue(0, y); enqueue(383, y); }
-        for (let cursor = 0; cursor < queue.length; cursor += 1) {
-          const index = queue[cursor], pixel = index * 4, x = index % 384, y = Math.floor(index / 384);
-          data[pixel + 3] = 0;
-          if (x > 0) enqueue(x - 1, y);
-          if (x < 383) enqueue(x + 1, y);
-          if (y > 0) enqueue(x, y - 1);
-          if (y < 383) enqueue(x, y + 1);
-        }
-        if (name.startsWith("archer")) for (let index = 0; index < 384 * 384; index += 1) {
-          const pixel = index * 4, r = data[pixel], g = data[pixel + 1], b = data[pixel + 2];
-          if (Math.min(r, g, b) >= 230 && Math.max(r, g, b) - Math.min(r, g, b) <= 24) data[pixel + 3] = 0;
-        }
-
-        // Peel only pale pixels touching transparency. The dark pixel-art outline
-        // becomes a natural stop, so internal hair, faces and equipment stay whole.
-        const removeHalo = (passes: number, floor: number, spread: number) => {
-          for (let pass = 0; pass < passes; pass += 1) {
-            const alpha = new Uint8Array(384 * 384);
-            for (let index = 0; index < alpha.length; index += 1) alpha[index] = data[index * 4 + 3];
-            for (let y = 1; y < 383; y += 1) for (let x = 1; x < 383; x += 1) {
-              const index = y * 384 + x;
-              if (alpha[index] === 0) continue;
-              const pixel = index * 4, r = data[pixel], g = data[pixel + 1], b = data[pixel + 2];
-              const touchesTransparency = alpha[index - 385] === 0 || alpha[index - 384] === 0 || alpha[index - 383] === 0
-                || alpha[index - 1] === 0 || alpha[index + 1] === 0
-                || alpha[index + 383] === 0 || alpha[index + 384] === 0 || alpha[index + 385] === 0;
-              if (touchesTransparency && Math.min(r, g, b) >= floor && Math.max(r, g, b) - Math.min(r, g, b) <= spread) data[pixel + 3] = 0;
-            }
-          }
-        };
-        if (name.startsWith("archer")) removeHalo(8, 45, 100);
-        else removeHalo(3, 145, 55);
-
-        if (name.startsWith("archer")) {
-          const seen = new Uint8Array(384 * 384);
-          const components: Array<{ pixels: number[]; minX: number; minY: number; maxX: number; maxY: number }> = [];
-          for (let start = 0; start < seen.length; start += 1) {
-            if (seen[start] || data[start * 4 + 3] === 0) continue;
-            const pixels = [start];
-            seen[start] = 1;
-            let minX = start % 384, maxX = minX, minY = Math.floor(start / 384), maxY = minY;
-            for (let cursor = 0; cursor < pixels.length; cursor += 1) {
-              const index = pixels[cursor], x = index % 384, y = Math.floor(index / 384);
-              minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
-              for (const neighbor of [index - 385, index - 384, index - 383, index - 1, index + 1, index + 383, index + 384, index + 385]) {
-                if (neighbor < 0 || neighbor >= seen.length || seen[neighbor] || data[neighbor * 4 + 3] === 0) continue;
-                const neighborX = neighbor % 384;
-                if (Math.abs(neighborX - x) > 1) continue;
-                seen[neighbor] = 1;
-                pixels.push(neighbor);
-              }
-            }
-            components.push({ pixels, minX, minY, maxX, maxY });
-          }
-          const body = components.reduce<(typeof components)[number] | null>((largest, component) => !largest || component.pixels.length > largest.pixels.length ? component : largest, null);
-          if (body) {
-            const lowerBody = body.minY + (body.maxY - body.minY) * .68;
-            for (const component of components) {
-              if (component === body || component.pixels.length > body.pixels.length * .28) continue;
-              const belowBody = component.minY >= lowerBody && component.maxX >= body.minX && component.minX <= body.maxX;
-              if (belowBody) for (const index of component.pixels) data[index * 4 + 3] = 0;
-            }
-          }
-        }
-        frameContext.putImageData(pixels, 0, 0);
         frames.push(frame);
       }
       preparedFrames.set(name, frames);
@@ -421,7 +322,11 @@ export function IdleGame() {
     const drawSpriteFrame = (image: HTMLCanvasElement, x: number, y: number, size: number) => {
       context.drawImage(image, x - size / 2, y - size, size, size);
     };
-    const drawActorBars = (actor: Actor, hostile = false, height = 91, width = 48) => {
+    const monsterSpriteSize = (monster: Monster) => monster.species === "oni-behemut-gold" || monster.species === "oni-behemut" ? 128
+      : monster.species === "oni-brute" ? 96
+        : monster.species === "bat" ? 32 : 64;
+    const walkFrameSequence = [0, 1, 0, 3] as const;
+    const drawActorBars = (actor: Actor, hostile = false, height = 68, width = 48) => {
       const x = actor.x - width / 2, y = actor.y - height, health = Math.max(0, actor.hp / actor.maxHp), mana = Math.max(0, actor.mana / actor.maxMana);
       context.fillStyle = "#080b0ae6"; context.fillRect(x - 2, y - 2, width + 4, 12);
       context.fillStyle = "#30282b"; context.fillRect(x, y, width, 4); context.fillStyle = hostile ? "#c83245" : "#4fc46b"; context.fillRect(x, y, width * health, 4);
@@ -430,7 +335,7 @@ export function IdleGame() {
     const drawRarityMarker = (monster: Monster) => {
       const golden = monster.species === "golden-bat" || monster.species === "oni-behemut-gold";
       if (monster.rarity === "normal" && !golden) return;
-      const markerHeight = golden ? monster.species === "oni-behemut-gold" ? 170 : 132 : monster.species === "oni-behemut" || monster.species === "oni-brute" ? 142 : 108;
+      const markerHeight = monsterSpriteSize(monster) + 22;
       const x = Math.round(monster.x), y = Math.round(monster.y - markerHeight);
       context.save();
       context.fillStyle = golden ? "#ffd84a" : monster.rarity === "rare" ? "#f4f7f8" : "#ff3048";
@@ -460,9 +365,9 @@ export function IdleGame() {
       const frames = preparedFrames.get(spriteName);
       if (!frames) return;
       const attackProgress = shooting ? Math.max(0, Math.min(1, 1 - actor.attackPulse / cowboyAttackDuration)) : 0;
-      const frame = shooting ? Math.min(3, Math.floor(attackProgress * 4)) : moving ? Math.floor(elapsed * 8) % 4 : 0;
+      const frame = shooting && character === "cowboy" ? Math.min(3, Math.floor(attackProgress * 4)) : moving ? walkFrameSequence[Math.floor(elapsed * 8) % walkFrameSequence.length] : 0;
       const row = { down: 0, up: 1, left: 2, right: 3 }[actor.direction];
-      drawSpriteFrame(frames[row * 4 + frame], actor.x, actor.y, 96);
+      drawSpriteFrame(frames[row * 4 + frame], actor.x, actor.y, 64);
     };
     const drawMonster = (monster: Monster, moving: boolean) => {
       const dying = monster.deathTimer > 0, attacking = monster.attackPulse > 0 || monster.abilityPulse > 0;
@@ -480,46 +385,21 @@ export function IdleGame() {
       const frames = preparedFrames.get(spriteName);
       if (!frames) return;
       const row = { down: 0, up: 1, left: 2, right: 3 }[monster.direction];
-      const duration = monster.abilityPulse > 0 ? MONSTER_ABILITY_DURATION : MONSTER_ATTACK_DURATION;
-      const pulse = monster.abilityPulse > 0 ? monster.abilityPulse : monster.attackPulse;
-      const frame = attacking ? Math.min(3, Math.floor((duration - pulse) / duration * 4)) : moving ? Math.floor(elapsed * 8) % 4 : 0;
+      const frame = attacking ? 0 : moving ? walkFrameSequence[Math.floor(elapsed * 8) % walkFrameSequence.length] : 0;
       const image = frames[row * 4 + frame];
-      const size = monster.species === "oni-behemut-gold" ? 158 : monster.species === "oni-behemut" ? 150 : monster.species === "oni-brute" ? 126 : monster.species === "oni-fighter" ? 108 : monster.species === "oni-common" ? 102 : monster.species === "golden-bat" ? 112 : monster.species === "bat" ? 84 : 96;
-      const groundY = monster.species === "bat" || monster.species === "golden-bat" ? monster.y - 12 : monster.y;
+      const size = monsterSpriteSize(monster);
+      const groundY = monster.species === "bat" || monster.species === "golden-bat" ? monster.y - 6 : monster.y;
       context.save();
       if (dying) { const progress = 1 - monster.deathTimer / .9; context.globalAlpha = Math.max(0, 1 - progress); context.translate(monster.x, groundY); context.rotate((monster.facing === "left" ? -1 : 1) * progress * 1.35); drawSpriteFrame(image, 0, 0, size); }
       else drawSpriteFrame(image, monster.x, groundY, size);
       context.restore();
     };
-    const drawBatIsland = () => {
-      context.save(); context.lineCap = "round";
-      context.strokeStyle = "#101923"; context.lineWidth = 76; context.beginPath(); context.moveTo(BAT_ISLAND.x + 88, BAT_ISLAND.y + 18); context.lineTo(390, BAT_ISLAND.y + 18); context.stroke();
-      context.strokeStyle = "#69727a"; context.lineWidth = 54; context.stroke();
-      context.strokeStyle = "#343c44"; context.lineWidth = 4; context.setLineDash([18, 12]); context.stroke(); context.setLineDash([]);
-      context.beginPath(); context.ellipse(BAT_ISLAND.x, BAT_ISLAND.y, BAT_ISLAND.radiusX, BAT_ISLAND.radiusY, -.08, 0, Math.PI * 2);
-      context.fillStyle = "#111b24"; context.fill(); context.lineWidth = 16; context.strokeStyle = "#17232c"; context.stroke(); context.clip();
-      if (images.terrain.complete && images.terrain.naturalWidth) {
-        const cellWidth = images.terrain.naturalWidth / 4, cellHeight = images.terrain.naturalHeight / 4;
-        for (let y = BAT_ISLAND.y - BAT_ISLAND.radiusY; y < BAT_ISLAND.y + BAT_ISLAND.radiusY; y += 112) for (let x = BAT_ISLAND.x - BAT_ISLAND.radiusX; x < BAT_ISLAND.x + BAT_ISLAND.radiusX; x += 112) {
-          context.drawImage(images.terrain, 10, 10, cellWidth - 20, cellHeight - 20, x, y, 114, 114);
-        }
+    const drawBatIslandProps = () => {
+      drawAtlasTile(images.architecture, 12, 4, 4, BAT_ISLAND.x + 38, BAT_ISLAND.y - 66, 220, 140);
+      drawAtlasTile(images.architecture, 15, 4, 4, BAT_ISLAND.x - 72, BAT_ISLAND.y + 116, 144, 144);
+      for (const rose of [{ x: -62, y: -104 }, { x: 68, y: -68 }, { x: -58, y: 92 }, { x: 54, y: 124 }]) {
+        drawAtlasTile(images.props, 10, 4, 4, BAT_ISLAND.x + rose.x - 22, BAT_ISLAND.y + rose.y - 44, 44, 44);
       }
-      context.fillStyle = "#11131830"; context.fillRect(BAT_ISLAND.x - BAT_ISLAND.radiusX, BAT_ISLAND.y - 24, BAT_ISLAND.radiusX * 2, 48);
-      context.restore();
-      for (let index = 0; index < 10; index += 1) {
-        const angle = index / 10 * Math.PI * 2, x = BAT_ISLAND.x + Math.cos(angle) * (BAT_ISLAND.radiusX - 8), y = BAT_ISLAND.y + Math.sin(angle) * (BAT_ISLAND.radiusY - 8);
-        drawAtlasTile(images.props, 4, 4, 4, x - 23, y - 34, 46, 46);
-      }
-      drawAtlasTile(images.props, 13, 4, 4, BAT_ISLAND.x - 54, BAT_ISLAND.y + 4, 108, 108);
-      for (const rose of [{ x: -66, y: -112 }, { x: 72, y: -74 }, { x: -58, y: 94 }, { x: 58, y: 132 }]) drawAtlasTile(images.props, 0, 4, 4, BAT_ISLAND.x + rose.x - 18, BAT_ISLAND.y + rose.y - 36, 36, 36);
-    };
-    const drawBloodStain = (stain: Point, index: number) => {
-      context.save(); context.translate(stain.x, stain.y); context.rotate(((index * 37) % 18 - 9) * Math.PI / 180);
-      context.fillStyle = "#5b1018b8"; context.beginPath(); context.ellipse(0, 0, 13 + index % 4 * 3, 6 + index % 3 * 2, 0, 0, Math.PI * 2); context.fill();
-      context.fillStyle = "#8d1723c7"; context.fillRect(-7, -3, 10, 4); context.fillRect(4, 1, 7, 3);
-      context.fillStyle = "#4a0c13d6";
-      for (const drop of [{ x: -22, y: -8 }, { x: 20, y: 7 }, { x: -12, y: 13 }, { x: 27, y: -5 }]) context.fillRect(drop.x + index % 3, drop.y - index % 2, index % 2 ? 3 : 4, 3);
-      context.restore();
     };
     const render = () => {
       const width = innerWidth, height = innerHeight, currentRegion = regionRef.current;
@@ -527,40 +407,26 @@ export function IdleGame() {
       context.clearRect(0, 0, width, height);
       context.save(); context.translate(width / 2 - camera.x, height / 2 - camera.y);
       if (terrainImage.complete && terrainImage.naturalWidth) {
-        const groundCellW = terrainImage.naturalWidth / 4, groundCellH = terrainImage.naturalHeight / 4;
-        const terrainInset = 10;
-        for (let y = 0; y < WORLD_HEIGHT; y += 128) for (let x = 0; x < WORLD_WIDTH; x += 128) {
-          const variant = currentRegion === "ryukuzam" ? (Math.floor(x / 128) + Math.floor(y / 128) * 3) % 13 === 0 ? 2 : 0 : (Math.floor(x / 128) * 3 + Math.floor(y / 128) * 5) % 11 === 0 ? 1 : 0;
-          context.drawImage(terrainImage, variant * groundCellW + terrainInset, terrainInset, groundCellW - terrainInset * 2, groundCellH - terrainInset * 2, x, y, 130, 130);
-        }
-        for (const field of currentRegion === "ryukuzam" ? [{ x: 260, y: 560, w: 470, h: 360 }, { x: 1450, y: 920, w: 520, h: 330 }] : [{ x: 260, y: 560, w: 470, h: 360 }, { x: 1450, y: 920, w: 520, h: 330 }]) {
-          context.save(); context.beginPath(); context.ellipse(field.x + field.w / 2, field.y + field.h / 2, field.w / 2, field.h / 2, -.18, 0, Math.PI * 2); context.clip();
-          const fieldTile = currentRegion === "ryukuzam" ? 4 : 3;
-          for (let y = field.y; y < field.y + field.h; y += 126) for (let x = field.x; x < field.x + field.w; x += 126) context.drawImage(terrainImage, fieldTile * groundCellW + terrainInset, terrainInset, groundCellW - terrainInset * 2, groundCellH - terrainInset * 2, x, y, 128, 128);
-          context.restore();
-        }
-        const roadTexture = document.createElement("canvas"); roadTexture.width = roadTexture.height = 156; const roadContext = roadTexture.getContext("2d")!;
-        roadContext.imageSmoothingEnabled = false; roadContext.drawImage(terrainImage, (currentRegion === "ryukuzam" ? 3 : 2) * groundCellW, 0, groundCellW, groundCellH, 0, 0, 156, 156);
-        context.lineCap = "round"; context.lineJoin = "round"; context.beginPath(); context.moveTo(1230, -80); context.bezierCurveTo(1110, 420, 1430, 680, 1280, 990); context.bezierCurveTo(1150, 1260, 1440, 1510, 1350, 1880);
-        context.strokeStyle = "#101a25"; context.lineWidth = 156; context.stroke(); context.strokeStyle = context.createPattern(roadTexture, "repeat")!; context.lineWidth = 132; context.stroke();
+        context.drawImage(terrainImage, 0, 0, WORLD_WIDTH, WORLD_HEIGHT);
       } else { context.fillStyle = context.createPattern(texture, "repeat")!; context.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT); }
-      if (currentRegion === "fiordevalle") { context.fillStyle = "#304f65"; context.beginPath(); context.moveTo(180, 0); context.bezierCurveTo(260, 390, 90, 720, 270, 1060); context.bezierCurveTo(390, 1320, 180, 1580, 230, 1800); context.lineTo(0, 1800); context.lineTo(0, 0); context.closePath(); context.fill(); }
-      if (currentRegion === "fiordevalle") { drawBatIsland(); bloodStains.forEach(drawBloodStain); }
       const layers: Array<{ y: number; draw: () => void }> = obstacles.map((item) => ({ y: item.y + item.radius * .55, draw: () => {
-        if (currentRegion === "ryukuzam") drawAtlasTile(images.ryukuzamArchitecture, item.kind === "tree" ? item.x % 2 > 1 ? 6 : 7 : 8, 4, 4, item.x - item.radius * 1.8, item.y - item.radius * 3.4, item.radius * 3.6, item.radius * 3.6);
-        else drawAtlasTile(images.props, item.kind === "tree" ? 3 : 4, 4, 4, item.x - item.radius * 1.7, item.y - item.radius * 3.2, item.radius * 3.4, item.radius * 3.4);
+        if (currentRegion === "ryukuzam") drawAtlasTile(images.ryukuzamArchitecture, item.kind === "tree" ? Math.floor(item.x + item.y) % 3 === 0 ? 4 : 5 : 6, 4, 4, item.x - item.radius * 1.7, item.y - item.radius * 3.2, item.radius * 3.4, item.radius * 3.4);
+        else drawAtlasTile(images.props, item.kind === "tree" ? 9 : 6, 4, 4, item.x - item.radius * 1.7, item.y - item.radius * 3.2, item.radius * 3.4, item.radius * 3.4);
       } }));
-      if (currentRegion === "fiordevalle") for (const rose of rosePatches) layers.push({ y: rose.y, draw: () => drawAtlasTile(images.props, rose.tile, 4, 4, rose.x - rose.size / 2, rose.y - rose.size, rose.size, rose.size) });
+      if (currentRegion === "fiordevalle") {
+        layers.push({ y: BAT_ISLAND.y + 180, draw: drawBatIslandProps });
+        for (const rose of rosePatches) layers.push({ y: rose.y, draw: () => drawAtlasTile(images.props, 10, 4, 4, rose.x - rose.size / 2, rose.y - rose.size, rose.size, rose.size) });
+      }
       for (const item of landmarks) layers.push({ y: item.y, draw: () => {
         if (currentRegion === "ryukuzam") drawAtlasTile(images.ryukuzamArchitecture, item.tile % 16, 4, 4, item.x - item.width / 2, item.y - item.height, item.width, item.height);
-        else { const image = item.atlas === "architecture" ? images.architecture : images.props; const cells = item.atlas === "architecture" ? 3 : 4; drawAtlasTile(image, item.tile, cells, cells, item.x - item.width / 2, item.y - item.height, item.width, item.height); }
+        else { const image = item.atlas === "architecture" ? images.architecture : images.props; drawAtlasTile(image, item.tile, 4, 4, item.x - item.width / 2, item.y - item.height, item.width, item.height); }
       } });
       for (const monster of monsters.filter((item) => item.region === currentRegion && (item.hp > 0 || item.deathTimer > 0))) layers.push({ y: monster.y, draw: () => { drawMonsterAbility(monster); drawMonster(monster, monsterMoving.get(monster.id) ?? false); } });
       layers.push({ y: player.y, draw: () => drawPlayer(player, playerMoving) });
       layers.sort((a, b) => a.y - b.y); for (const layer of layers) layer.draw();
       for (const monster of monsters) if (monster.region === currentRegion && monster.hp > 0) {
-        const barHeight = monster.species === "oni-behemut-gold" ? 156 : monster.species === "oni-behemut" ? 150 : monster.species === "oni-brute" ? 126 : monster.species === "oni-fighter" || monster.species === "oni-common" ? 106 : monster.species === "golden-bat" ? 116 : monster.species === "bat" ? 84 : 91;
-        const barWidth = monster.species === "oni-behemut-gold" || monster.species === "oni-behemut" ? 76 : monster.species === "oni-brute" || monster.species === "golden-bat" ? 66 : 48;
+        const barHeight = monsterSpriteSize(monster) + (monster.species === "bat" || monster.species === "golden-bat" ? 10 : 4);
+        const barWidth = monsterSpriteSize(monster) >= 128 ? 76 : monsterSpriteSize(monster) >= 96 ? 64 : 48;
         drawActorBars(monster, true, barHeight, barWidth); drawRarityMarker(monster);
       }
       drawActorBars(player);
@@ -580,9 +446,9 @@ export function IdleGame() {
       const offset = { x: target.x - player.x, y: target.y - player.y }, distance = Math.hypot(offset.x, offset.y);
       player.direction = directionFromVector(offset, player.direction); if (offset.x !== 0) player.facing = offset.x < 0 ? "left" : "right";
       const muzzle = character === "archer"
-        ? { up: { x: 0, y: -62 }, down: { x: 0, y: -36 }, left: { x: -42, y: -42 }, right: { x: 42, y: -42 } }[player.direction]
-        : { up: { x: dual ? (dualShotsRemaining % 2 ? -15 : 15) : 0, y: -70 }, down: { x: dual ? (dualShotsRemaining % 2 ? -18 : 18) : 0, y: -18 }, left: { x: -38, y: dualShotsRemaining % 2 ? -42 : -31 }, right: { x: 38, y: dualShotsRemaining % 2 ? -42 : -31 } }[player.direction];
-      projectiles.push({ x: player.x + muzzle.x, y: player.y + muzzle.y, targetX: target.x, targetY: target.y - (target.species.startsWith("oni-behemut") ? 70 : 42), age: 0, duration: Math.max(.1, distance / 1000) });
+        ? { up: { x: 0, y: -44 }, down: { x: 0, y: -24 }, left: { x: -28, y: -30 }, right: { x: 28, y: -30 } }[player.direction]
+        : { up: { x: dual ? (dualShotsRemaining % 2 ? -10 : 10) : 0, y: -46 }, down: { x: dual ? (dualShotsRemaining % 2 ? -12 : 12) : 0, y: -14 }, left: { x: -27, y: dualShotsRemaining % 2 ? -30 : -22 }, right: { x: 27, y: dualShotsRemaining % 2 ? -30 : -22 } }[player.direction];
+      projectiles.push({ x: player.x + muzzle.x, y: player.y + muzzle.y, targetX: target.x, targetY: target.y - monsterSpriteSize(target) * .45, age: 0, duration: Math.max(.1, distance / 1000) });
       const critical = character === "cowboy" && critArmed, damage = critical ? baseDamage * 2 : baseDamage;
       if (character === "cowboy") {
         if (critical) { critArmed = false; chamberCount = 0; setCriticalReady(false); setChamberShots(0); }
@@ -761,8 +627,8 @@ export function IdleGame() {
         })}
       </section>
     </aside>}
-    {hydrated && !statsOpen && !buildOpen && <aside className="idle-hunt-panel" aria-label="Informacoes da caca">
-      <nav><button className={huntTab === "battle" ? "active" : ""} onClick={() => setHuntTab("battle")}>Caca</button><button className={huntTab === "loot" ? "active" : ""} onClick={() => setHuntTab("loot")}>Saque</button></nav>
+    {hydrated && !statsOpen && !buildOpen && <aside className={`idle-hunt-panel${huntCollapsed ? " collapsed" : ""}`} aria-label="Informacoes da caca">
+      <nav><button className={huntTab === "battle" ? "active" : ""} onClick={() => setHuntTab("battle")}>Caca</button><button className={huntTab === "loot" ? "active" : ""} onClick={() => setHuntTab("loot")}>Saque</button><button className="idle-hunt-toggle" aria-label={huntCollapsed ? "Abrir painel de caca e saque" : "Minimizar painel de caca e saque"} aria-expanded={!huntCollapsed} onClick={() => setHuntCollapsed((value) => !value)}><i /></button></nav>
       {huntTab === "battle" ? <>
         <section className="idle-analyzer"><header>ANALISADOR</header><div><span>Regiao <b>{region === "fiordevalle" ? "Fiordevalle" : "Ryukuzam"}</b></span><span>Estado <b className={autoHunt ? "running" : "paused"}>{autoHunt ? "Cacando" : "Pausado"}</b></span><span>Abates <b>{sessionKills}</b></span><span>Ouro <b>{sessionGold}</b></span></div></section>
         <section className="idle-battle-list"><header>MONSTROS <small>{regionMonsters.length} vivos</small></header>{regionMonsters.map((monster) => <button key={monster.id} className={monster.id === selectedMonsterId ? "selected" : ""} onClick={() => { selectedMonsterIdRef.current = monster.id; setSelectedMonsterId(monster.id); targetRef.current = null; setAutoHunt(true); }}>

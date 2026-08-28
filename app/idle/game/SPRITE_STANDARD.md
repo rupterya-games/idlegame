@@ -36,10 +36,11 @@ nunca use apenas `floor(tamanho / 4)` para iniciar todas as celulas.
 `prepareSpriteSheet`, em `ui/idle-game.tsx`, e o unico pipeline autorizado:
 
 1. Recorta as 16 celulas por limites exatos e independentes.
-2. Remove fundo claro legado conectado a borda.
-3. Remove franja clara externa ate encontrar o contorno escuro real.
-4. Remove residuos inferiores conhecidos apenas nas folhas legadas do arqueiro.
-5. Cria 16 canvases transparentes com dimensao fixa.
+2. Preserva integralmente o alpha, o centro corporal e a linha dos pes.
+3. Cria 16 canvases transparentes com dimensao fixa.
+
+Fundo e franja sao corrigidos antes da integracao por
+`scripts/normalize_pixel_atlas.py`. O navegador nao tenta reconstruir arte ruim.
 
 O preparador **nao pode**:
 
@@ -72,7 +73,10 @@ os redimensiona automaticamente.
 Todos os personagens terrestres usam o ponto `actor.x, actor.y` como contato dos
 pes com o mundo. `drawSpriteFrame` desenha a celula inteira acima desse ponto.
 
-- Personagem e vampiros legados: `96 px` no canvas (`3 x 32`).
+- Morcegos comuns: `32 px` no canvas.
+- Cowboy, arqueiro, vampiros, Golden Morcego e Onis comuns: `64 px`.
+- Oni brutamontes: `96 px`.
+- Behemuts: `128 px`.
 - Barras usam uma altura propria da categoria, sem alterar a sprite.
 - Ordenacao de profundidade usa `actor.y`.
 - Nao desenhar elipse sob personagens ou monstros.

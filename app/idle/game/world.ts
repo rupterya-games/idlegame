@@ -36,15 +36,15 @@ export const obstacles: Obstacle[] = Array.from({ length: 92 }, (_, index) => {
 }).filter((obstacle) => Math.hypot(obstacle.x - 1200, obstacle.y - 920) > 180 && !isOnBatIsland(obstacle) && !isOnIslandCauseway(obstacle));
 
 export const landmarks: Landmark[] = [
-  { x: 420, y: 410, width: 250, height: 250, atlas: "architecture", tile: 0, label: "Vila das Rosas", blockRadius: 76 },
-  { x: 720, y: 360, width: 330, height: 330, atlas: "architecture", tile: 1, label: "Solar Carmesim", blockRadius: 104 },
-  { x: 1880, y: 430, width: 300, height: 300, atlas: "architecture", tile: 2, label: "Capela do Véu", blockRadius: 90 },
-  { x: 1940, y: 1210, width: 240, height: 240, atlas: "architecture", tile: 3, label: "Cripta dos Antigos", blockRadius: 72 },
-  { x: 450, y: 1360, width: 300, height: 300, atlas: "architecture", tile: 8, label: "Posto dos Caçadores", blockRadius: 92 },
-  { x: 1580, y: 1320, width: 230, height: 230, atlas: "props", tile: 13, label: "Círculo Rubro", blockRadius: 108, blockOffsetY: -96 },
-  { x: 1720, y: 720, width: 190, height: 190, atlas: "props", tile: 5, label: "Cemitério dos Sinos", blockRadius: 45 },
-  { x: 1840, y: 790, width: 175, height: 175, atlas: "props", tile: 6, label: "Cemitério dos Sinos", blockRadius: 42 },
-  { x: 1950, y: 850, width: 160, height: 160, atlas: "props", tile: 4, label: "Cemitério dos Sinos", blockRadius: 36 },
+  { x: 420, y: 410, width: 192, height: 192, atlas: "architecture", tile: 0, label: "Capela das Rosas", blockRadius: 62 },
+  { x: 720, y: 360, width: 176, height: 176, atlas: "architecture", tile: 1, label: "Cripta Carmesim", blockRadius: 58 },
+  { x: 1880, y: 430, width: 224, height: 176, atlas: "architecture", tile: 2, label: "Portão do Véu", blockRadius: 74 },
+  { x: 1940, y: 1210, width: 144, height: 176, atlas: "architecture", tile: 3, label: "Anjo do Silêncio", blockRadius: 46 },
+  { x: 450, y: 1360, width: 176, height: 152, atlas: "architecture", tile: 12, label: "Ponte dos Caçadores", blockRadius: 60 },
+  { x: 1580, y: 1320, width: 168, height: 168, atlas: "props", tile: 4, label: "Círculo Rubro", blockRadius: 70 },
+  { x: 1720, y: 720, width: 88, height: 112, atlas: "props", tile: 5, label: "Cemitério dos Sinos", blockRadius: 30 },
+  { x: 1840, y: 790, width: 112, height: 104, atlas: "props", tile: 6, label: "Cemitério dos Sinos", blockRadius: 34 },
+  { x: 1950, y: 850, width: 88, height: 112, atlas: "props", tile: 5, label: "Cemitério dos Sinos", blockRadius: 30 },
 ];
 
 export const clampToWorld = (point: Point): Point => ({
