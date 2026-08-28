@@ -50,6 +50,13 @@ def remove_connected_background(image: Image.Image, mode: str) -> None:
         if y < height - 1:
             enqueue(x, y + 1)
 
+    if mode == "green-screen":
+        for y in range(height):
+            for x in range(width):
+                red, green, blue, alpha = pixels[x, y]
+                if alpha and green > 55 and green > red + 14 and green > blue + 14:
+                    pixels[x, y] = (0, 0, 0, 0)
+
 
 def normalize(input_path: Path, output_path: Path, cell_size: int, background: str) -> None:
     source = Image.open(input_path).convert("RGBA")

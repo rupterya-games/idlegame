@@ -24,12 +24,12 @@ const batMonsters: Monster[] = Array.from({ length: 6 }, (_, index) => {
 const oniSpawnPoints: Point[] = [];
 const oniLineup = ["oni-common", "oni-common", "oni-fighter", "oni-fighter", "oni-brute", "oni-brute", "oni-behemut", "oni-behemut-gold"] as const;
 const oniMonsters: Monster[] = oniLineup.map((species, index) => {
-  const home = findMonsterSpawn(oniSpawnPoints); oniSpawnPoints.push(home); return createOni(index, home, species);
+  const home = findMonsterSpawn(oniSpawnPoints, "ryukuzam"); oniSpawnPoints.push(home); return createOni(index, home, species);
 });
 const monsters: Monster[] = [...vampireMonsters, ...batMonsters, ...oniMonsters];
-const rosePatches = Array.from({ length: 34 }, (_, index) => ({
-  x: index < 17 ? 310 + ((index * 97) % 360) : 1500 + ((index * 83) % 400),
-  y: index < 17 ? 610 + ((index * 61) % 250) : 970 + ((index * 67) % 240),
+const rosePatches = Array.from({ length: 20 }, (_, index) => ({
+  x: index < 10 ? 310 + ((index * 97) % 360) : 1500 + ((index * 83) % 400),
+  y: index < 10 ? 610 + ((index * 61) % 250) : 970 + ((index * 67) % 240),
   tile: index % 4 === 0 ? 1 : 0,
   size: index % 4 === 0 ? 58 : 38,
 }));
@@ -49,7 +49,7 @@ type ActivityEvent = { id: number; text: string; tone: "combat" | "loot" | "syst
 const COWBOY_BASIC_ATTACK_DURATION = .32;
 const COWBOY_DUAL_ATTACK_DURATION = .2;
 const COWBOY_ATTACK_IMPACT_PROGRESS = .5;
-const SPRITE_ASSET_VERSION = "20260827-6";
+const SPRITE_ASSET_VERSION = "20260828-2";
 
 const monsterNames: Record<Monster["species"], string> = {
   vampire: "Vampiro",
@@ -69,19 +69,19 @@ function monsterName(monster: Monster) {
 
 function loadImages() {
   const sources: Record<keyof Images, string> = {
-    cowboyIdle: "/idle/assets/cowboy-walk-4dir-v6.png",
-    cowboyWalk: "/idle/assets/cowboy-walk-4dir-v6.png",
-    cowboyAttack: "/idle/assets/cowboy-attack-4dir-v7.png",
-    cowboyDual: "/idle/assets/cowboy-attack-4dir-v7.png",
-    archerIdle: "/idle/assets/archer-walk-4dir-v2.png",
-    archerWalk: "/idle/assets/archer-walk-4dir-v2.png",
-    archerAttack: "/idle/assets/archer-walk-4dir-v2.png",
-    vampireWalk: "/idle/assets/vampire-walk-4dir-v6.png",
-    vampireAttack: "/idle/assets/vampire-walk-4dir-v6.png",
-    vampireRareWalk: "/idle/assets/vampire-rare-walk-4dir-v2.png",
-    vampireRareAttack: "/idle/assets/vampire-rare-walk-4dir-v2.png",
-    vampireLegendaryWalk: "/idle/assets/vampire-legendary-walk-4dir-v2.png",
-    vampireLegendaryAttack: "/idle/assets/vampire-legendary-walk-4dir-v2.png",
+    cowboyIdle: "/idle/assets/cowboy-walk-4dir-v7.png",
+    cowboyWalk: "/idle/assets/cowboy-walk-4dir-v7.png",
+    cowboyAttack: "/idle/assets/cowboy-attack-4dir-v9.png",
+    cowboyDual: "/idle/assets/cowboy-attack-4dir-v9.png",
+    archerIdle: "/idle/assets/archer-walk-4dir-v4.png",
+    archerWalk: "/idle/assets/archer-walk-4dir-v4.png",
+    archerAttack: "/idle/assets/archer-walk-4dir-v4.png",
+    vampireWalk: "/idle/assets/vampire-walk-4dir-v8.png",
+    vampireAttack: "/idle/assets/vampire-walk-4dir-v8.png",
+    vampireRareWalk: "/idle/assets/vampire-rare-walk-4dir-v3.png",
+    vampireRareAttack: "/idle/assets/vampire-rare-walk-4dir-v3.png",
+    vampireLegendaryWalk: "/idle/assets/vampire-legendary-walk-4dir-v3.png",
+    vampireLegendaryAttack: "/idle/assets/vampire-legendary-walk-4dir-v3.png",
     batWalk: "/idle/assets/bat-walk-4dir-v2.png",
     batAttack: "/idle/assets/bat-walk-4dir-v2.png",
     goldenBatWalk: "/idle/assets/golden-bat-walk-4dir-v2.png",
@@ -91,10 +91,10 @@ function loadImages() {
     oniBruteWalk: "/idle/assets/oni-brute-walk-4dir-v2.png", oniBruteAttack: "/idle/assets/oni-brute-walk-4dir-v2.png",
     oniBehemutWalk: "/idle/assets/oni-behemut-walk-4dir-v2.png", oniBehemutAttack: "/idle/assets/oni-behemut-walk-4dir-v2.png",
     oniBehemutGoldWalk: "/idle/assets/oni-behemut-gold-walk-4dir-v2.png", oniBehemutGoldAttack: "/idle/assets/oni-behemut-gold-walk-4dir-v2.png",
-    terrain: "/idle/assets/fiordevalle-world-v1.png",
+    terrain: "/idle/assets/fiordevalle-world-v2.png",
     architecture: "/idle/assets/fiordevalle-architecture-v2.png",
     props: "/idle/assets/fiordevalle-architecture-v2.png",
-    ryukuzamTerrain: "/idle/assets/ryukuzam-world-v1.png",
+    ryukuzamTerrain: "/idle/assets/ryukuzam-world-v2.png",
     ryukuzamArchitecture: "/idle/assets/ryukuzam-architecture-v2.png",
   };
   return Object.fromEntries(Object.entries(sources).map(([name, source]) => {
@@ -110,7 +110,7 @@ function CharacterAvatar({ character }: { character: CharacterClass }) {
     const canvas = avatarRef.current;
     if (!canvas) return;
     const image = new Image();
-    image.src = `${character === "cowboy" ? "/idle/assets/cowboy-walk-4dir-v6.png" : "/idle/assets/archer-walk-4dir-v2.png"}?v=${SPRITE_ASSET_VERSION}`;
+    image.src = `${character === "cowboy" ? "/idle/assets/cowboy-walk-4dir-v7.png" : "/idle/assets/archer-walk-4dir-v4.png"}?v=${SPRITE_ASSET_VERSION}`;
     image.onload = () => {
       const cellWidth = Math.round(image.naturalWidth / 4), cellHeight = Math.round(image.naturalHeight / 4);
       const context = canvas.getContext("2d")!;
@@ -395,7 +395,7 @@ export function IdleGame() {
       context.restore();
     };
     const drawBatIslandProps = () => {
-      drawAtlasTile(images.architecture, 12, 4, 4, BAT_ISLAND.x + 38, BAT_ISLAND.y - 66, 220, 140);
+      drawAtlasTile(images.architecture, 12, 4, 4, BAT_ISLAND.x + 32, BAT_ISLAND.y - 80, 420, 150);
       drawAtlasTile(images.architecture, 15, 4, 4, BAT_ISLAND.x - 72, BAT_ISLAND.y + 116, 144, 144);
       for (const rose of [{ x: -62, y: -104 }, { x: 68, y: -68 }, { x: -58, y: 92 }, { x: 54, y: 124 }]) {
         drawAtlasTile(images.props, 10, 4, 4, BAT_ISLAND.x + rose.x - 22, BAT_ISLAND.y + rose.y - 44, 44, 44);
@@ -530,12 +530,12 @@ export function IdleGame() {
       }
       let input = { x: Number(keys.has("d") || keys.has("arrowright")) - Number(keys.has("a") || keys.has("arrowleft")), y: Number(keys.has("s") || keys.has("arrowdown")) - Number(keys.has("w") || keys.has("arrowup")) };
       const target = targetRef.current;
-      if (target) { if (!playerPath.length || playerRepathCooldown === 0) { playerPath = findWorldPath(player, target); playerRepathCooldown = .7; } const waypoint = playerPath[0]; if (waypoint && Math.hypot(waypoint.x - player.x, waypoint.y - player.y) < 10) playerPath.shift(); else if (waypoint) input = normalized({ x: waypoint.x - player.x, y: waypoint.y - player.y }); else targetRef.current = null; }
+      if (target) { if (!playerPath.length || playerRepathCooldown === 0) { playerPath = findWorldPath(player, target, 18, regionRef.current); playerRepathCooldown = .7; } const waypoint = playerPath[0]; if (waypoint && Math.hypot(waypoint.x - player.x, waypoint.y - player.y) < 10) playerPath.shift(); else if (waypoint) input = normalized({ x: waypoint.x - player.x, y: waypoint.y - player.y }); else targetRef.current = null; }
       if (autoRef.current) {
         if (nearest) {
           const offset = { x: nearest.x - player.x, y: nearest.y - player.y }, distance = Math.hypot(offset.x, offset.y);
           if (distance > 260) {
-            if (!playerPath.length || playerRepathCooldown === 0) { playerPath = findWorldPath(player, nearest); playerRepathCooldown = .65; }
+            if (!playerPath.length || playerRepathCooldown === 0) { playerPath = findWorldPath(player, nearest, 18, regionRef.current); playerRepathCooldown = .65; }
             const waypoint = playerPath[0];
             if (waypoint && Math.hypot(waypoint.x - player.x, waypoint.y - player.y) < 10) playerPath.shift();
             else if (waypoint) input = normalized({ x: waypoint.x - player.x, y: waypoint.y - player.y });
@@ -555,7 +555,7 @@ export function IdleGame() {
         }
       }
       if (player.attackPulse > 0) input = { x: 0, y: 0 };
-      inputRef.current = input; const move = normalized(input), previousPlayer = { x: player.x, y: player.y }; const next = moveWithCollision(player, { x: move.x * PLAYER_SPEED * dt, y: move.y * PLAYER_SPEED * dt }); const pushesIntoMonster = activeEnemies.some((monster) => { const separation = (ACTOR_SEPARATION + monsterSeparation(monster)) / 2; return Math.hypot(next.x - monster.x, next.y - monster.y) < separation && Math.hypot(next.x - monster.x, next.y - monster.y) < Math.hypot(player.x - monster.x, player.y - monster.y); }); player.x = pushesIntoMonster ? previousPlayer.x : next.x; player.y = pushesIntoMonster ? previousPlayer.y : next.y; playerMoving = Math.hypot(player.x - previousPlayer.x, player.y - previousPlayer.y) > .05; if (playerMoving) player.direction = directionFromVector(move, player.direction); if (move.x !== 0 && (player.direction === "left" || player.direction === "right")) player.facing = move.x < 0 ? "left" : "right";
+      inputRef.current = input; const move = normalized(input), previousPlayer = { x: player.x, y: player.y }; const next = moveWithCollision(player, { x: move.x * PLAYER_SPEED * dt, y: move.y * PLAYER_SPEED * dt }, 16, regionRef.current); const pushesIntoMonster = activeEnemies.some((monster) => { const separation = (ACTOR_SEPARATION + monsterSeparation(monster)) / 2; return Math.hypot(next.x - monster.x, next.y - monster.y) < separation && Math.hypot(next.x - monster.x, next.y - monster.y) < Math.hypot(player.x - monster.x, player.y - monster.y); }); player.x = pushesIntoMonster ? previousPlayer.x : next.x; player.y = pushesIntoMonster ? previousPlayer.y : next.y; playerMoving = Math.hypot(player.x - previousPlayer.x, player.y - previousPlayer.y) > .05; if (playerMoving) player.direction = directionFromVector(move, player.direction); if (move.x !== 0 && (player.direction === "left" || player.direction === "right")) player.facing = move.x < 0 ? "left" : "right";
       for (const monster of monsters) if (monster.region === currentRegion && monster.hp > 0) {
         const previousMonster = { x: monster.x, y: monster.y }, action = stepMonster(monster, player, dt);
         monsterMoving.set(monster.id, Math.hypot(monster.x - previousMonster.x, monster.y - previousMonster.y) > .05);

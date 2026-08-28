@@ -1,4 +1,4 @@
-import type { Actor, Direction, Monster, Point } from "./types";
+import type { Actor, Direction, Monster, Point, WorldRegion } from "./types";
 import { findWorldPath, moveWithCollision } from "./world";
 
 export const PLAYER_SPEED = 168;
@@ -43,12 +43,12 @@ export function normalized(vector: Point): Point {
   return length > 0 ? { x: vector.x / length, y: vector.y / length } : { x: 0, y: 0 };
 }
 
-export function stepActor(actor: Actor, input: Point, speed: number, dt: number) {
+export function stepActor(actor: Actor, input: Point, speed: number, dt: number, region: WorldRegion = "fiordevalle") {
   // Physics may move diagonally; the visible sprite remains one of four stable directions.
   const movement = normalized(input);
   actor.direction = directionFromVector(movement, actor.direction);
   if (movement.x !== 0 && (actor.direction === "left" || actor.direction === "right")) actor.facing = movement.x < 0 ? "left" : "right";
-  const next = moveWithCollision(actor, { x: movement.x * speed * dt, y: movement.y * speed * dt });
+  const next = moveWithCollision(actor, { x: movement.x * speed * dt, y: movement.y * speed * dt }, 16, region);
   actor.x = next.x;
   actor.y = next.y;
 }
@@ -96,9 +96,9 @@ export function stepMonster(monster: Monster, player: Actor, dt: number): Monste
     }
     return null;
   }
-  if (!monster.path.length || monster.thinkCooldown === 0) { monster.path = findWorldPath(monster, player); monster.thinkCooldown = .65; }
+  if (!monster.path.length || monster.thinkCooldown === 0) { monster.path = findWorldPath(monster, player, 18, monster.region); monster.thinkCooldown = .65; }
   const waypoint = monster.path[0];
-  if (waypoint) { if (Math.hypot(waypoint.x - monster.x, waypoint.y - monster.y) < 10) monster.path.shift(); else stepActor(monster, { x: waypoint.x - monster.x, y: waypoint.y - monster.y }, monster.moveSpeed, dt); }
+  if (waypoint) { if (Math.hypot(waypoint.x - monster.x, waypoint.y - monster.y) < 10) monster.path.shift(); else stepActor(monster, { x: waypoint.x - monster.x, y: waypoint.y - monster.y }, monster.moveSpeed, dt, monster.region); }
   return null;
 }
 
@@ -109,8 +109,8 @@ export function separateMonsters(monsters: Monster[]) {
     const separation = (monsterSeparation(first) + monsterSeparation(second)) / 2;
     if (distance >= separation) continue;
     const normalX = distance > .01 ? dx / distance : firstIndex % 2 ? 1 : -1, normalY = distance > .01 ? dy / distance : 0, correction = (separation - distance) / 2;
-    const firstNext = moveWithCollision(first, { x: -normalX * correction, y: -normalY * correction });
-    const secondNext = moveWithCollision(second, { x: normalX * correction, y: normalY * correction });
+    const firstNext = moveWithCollision(first, { x: -normalX * correction, y: -normalY * correction }, 16, first.region);
+    const secondNext = moveWithCollision(second, { x: normalX * correction, y: normalY * correction }, 16, second.region);
     first.x = firstNext.x; first.y = firstNext.y; second.x = secondNext.x; second.y = secondNext.y;
   }
 }

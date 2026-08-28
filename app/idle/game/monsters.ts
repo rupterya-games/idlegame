@@ -1,4 +1,4 @@
-import type { Monster, MonsterRarity, MonsterSpecies, Point } from "./types";
+import type { Monster, MonsterRarity, MonsterSpecies, Point, WorldRegion } from "./types";
 import { BAT_ISLAND, canStand, WORLD_HEIGHT, WORLD_WIDTH } from "./world";
 
 type MonsterProfile = {
@@ -49,14 +49,14 @@ export function rollBatSpecies(): "bat" | "golden-bat" {
   return Math.random() < GOLDEN_BAT_SPAWN_CHANCE ? "golden-bat" : "bat";
 }
 
-export function findMonsterSpawn(occupied: Point[] = []): Point {
+export function findMonsterSpawn(occupied: Point[] = [], region: WorldRegion = "fiordevalle"): Point {
   for (let attempt = 0; attempt < 120; attempt += 1) {
     const point = { x: 90 + Math.random() * (WORLD_WIDTH - 180), y: 90 + Math.random() * (WORLD_HEIGHT - 180) };
-    if (Math.hypot(point.x - 1200, point.y - 920) < 310 || !canStand(point, 22)) continue;
+    if (Math.hypot(point.x - 1200, point.y - 920) < 310 || !canStand(point, 22, region)) continue;
     if (occupied.some((other) => Math.hypot(point.x - other.x, point.y - other.y) < 130)) continue;
     return point;
   }
-  return fallbackSpawns.find((point) => canStand(point, 22) && occupied.every((other) => Math.hypot(point.x - other.x, point.y - other.y) >= 100)) ?? fallbackSpawns[0];
+  return fallbackSpawns.find((point) => canStand(point, 22, region) && occupied.every((other) => Math.hypot(point.x - other.x, point.y - other.y) >= 100)) ?? fallbackSpawns[0];
 }
 
 export function findBatIslandSpawn(occupied: Point[] = []): Point {
@@ -66,7 +66,7 @@ export function findBatIslandSpawn(occupied: Point[] = []): Point {
       x: BAT_ISLAND.x + Math.cos(angle) * BAT_ISLAND.radiusX * distance,
       y: BAT_ISLAND.y + Math.sin(angle) * BAT_ISLAND.radiusY * distance,
     };
-    if (!canStand(point, 18) || occupied.some((other) => Math.hypot(point.x - other.x, point.y - other.y) < 72)) continue;
+    if (!canStand(point, 18, "fiordevalle") || occupied.some((other) => Math.hypot(point.x - other.x, point.y - other.y) < 72)) continue;
     return point;
   }
   return { x: BAT_ISLAND.x, y: BAT_ISLAND.y };
@@ -149,7 +149,7 @@ export function createOni(index: number, home: Point, species: keyof typeof ONI_
 export function respawnMonster(monster: Monster, occupied: Point[]) {
   const isBat = monster.species === "bat" || monster.species === "golden-bat";
   const isOni = monster.region === "ryukuzam";
-  const home = isBat ? findBatIslandSpawn(occupied) : findMonsterSpawn(occupied);
+  const home = isBat ? findBatIslandSpawn(occupied) : findMonsterSpawn(occupied, monster.region);
   monster.x = home.x;
   monster.y = home.y;
   monster.home = { ...home };

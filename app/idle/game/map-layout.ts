@@ -48,7 +48,7 @@ function insideEllipse(point: Point, center: Point, radiusX: number, radiusY: nu
 }
 
 function waterEdgeAt(y: number) {
-  const points = [{ y: 0, x: 180 }, { y: 390, x: 260 }, { y: 720, x: 90 }, { y: 1060, x: 270 }, { y: 1320, x: 390 }, { y: 1580, x: 180 }, { y: 1800, x: 230 }];
+  const points = [{ y: 0, x: 380 }, { y: 360, x: 340 }, { y: 720, x: 390 }, { y: 1060, x: 330 }, { y: 1320, x: 310 }, { y: 1580, x: 240 }, { y: 1800, x: 110 }];
   const upper = points.findIndex((point) => point.y >= y);
   if (upper <= 0) return points[0].x;
   const from = points[upper - 1], to = points[upper];
@@ -60,7 +60,7 @@ function isBatIsland(point: Point) {
 }
 
 function isBatCauseway(point: Point) {
-  return point.x >= BAT_ISLAND.x + 54 && point.x <= 430 && point.y >= BAT_ISLAND.y - 42 && point.y <= BAT_ISLAND.y + 70;
+  return point.x >= BAT_ISLAND.x + 64 && point.x <= 620 && point.y >= BAT_ISLAND.y - 58 && point.y <= BAT_ISLAND.y + 74;
 }
 
 function stableVariant(column: number, row: number, modulo: number) {

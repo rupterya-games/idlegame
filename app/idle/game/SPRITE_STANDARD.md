@@ -82,6 +82,10 @@ pes com o mundo. `drawSpriteFrame` desenha a celula inteira acima desse ponto.
 - Nao desenhar elipse sob personagens ou monstros.
 - Criaturas voadoras podem usar `groundY` proprio, documentado por especie.
 
+Herois e inimigos humanoides de `64 px` devem ocupar a mesma altura util dentro
+da celula, com tolerancia maxima de dois pixels. Caminhada e ataque usam o mesmo
+corpo, centro, escala e linha dos pes; somente a pose e o equipamento mudam.
+
 Se o personagem parece flutuar, corrija a linha dos pes na folha. Nao compense
 movendo o quadro durante a animacao.
 

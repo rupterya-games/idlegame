@@ -169,7 +169,7 @@ renderizador.
 ### Disparo de Prata
 
 - Dano base: 14.
-- Usa `cowboy-attack-4dir-v7.png`, derivado do mesmo corpo da caminhada `v6`.
+- Usa `cowboy-attack-4dir-v9.png`, derivado e escalado pelo mesmo corpo da caminhada `v7`.
 - O projetil e desenhado pelo motor, nao dentro de todos os quadros da folha.
 
 ### Tambor Marcado
@@ -210,6 +210,10 @@ Regras:
 - Crie variacoes de solo, estrada, agua, vegetacao e area de combate.
 - Evite que todos os tiles usem uma unica cor dominante.
 - O piso precisa continuar legivel atras de personagens e barras.
+- Use pixel art limpa de 16/32 bits, formas simplificadas e contorno de pixel.
+- Nao use pintura realista, textura fotografica ou acabamento dark fantasy
+  detalhado que destoe dos personagens de `64 x 64`.
+- Solo e caminhos devem ter contraste moderado; os atores sao o foco visual.
 
 Fiordevalle usa pedra gelada, neve, rosas, cemiterio e arquitetura gotica.
 Ryukuzam usa pedra musgosa, terra escura, bambu, folhas de bordo, arrozais,
@@ -219,6 +223,20 @@ O mapa publicado tambem pode usar um backplate continuo `4:3` normalizado para
 `1200 x 900`, desenhado no mundo em `2400 x 1800`. O atlas continua sendo a
 fonte para expansoes e transicoes. Backplates nao podem conter personagens, UI
 ou props com colisao; esses elementos permanecem em camadas separadas.
+
+### Mapa visual e mapa fisico sao um contrato unico
+
+Toda mudanca na agua, ilha, ponte, estrada ou margem do backplate exige a mesma
+mudanca em `game/world.ts` e, quando aplicavel, em `game/map-layout.ts`.
+
+- `canStand`, `moveWithCollision` e `findWorldPath` sempre recebem a regiao.
+- Fiordevalle e Ryukuzam nunca compartilham mascara de agua por acidente.
+- A ponte desenhada deve cobrir integralmente a faixa caminhavel.
+- Props altos ficam em camadas separadas e recebem colisao na base, nao no topo.
+- Arvores e pedras nao podem nascer sobre a estrada principal nem sobre zonas
+  de surgimento.
+- O teste final deve atravessar margens, ponte e arredores de estruturas nos
+  dois mapas.
 
 ## 9. Atlas de arquitetura
 
